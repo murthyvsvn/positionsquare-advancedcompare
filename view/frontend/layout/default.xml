@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<page xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:View/Layout/etc/page_configuration.xsd">
+  <head>
+		<css src="Positionsquare_Advancedcompare::css/productcompare.css"/>
+  </head>
+  <body>
+      <referenceBlock name="columns.top">
+          <block class="Positionsquare\Advancedcompare\Block\Index\Index" name="compareproducts_index_index" before="-" template="Positionsquare_Advancedcompare::compareproducts_index_index.phtml"/>
+      </referenceBlock>
+      <referenceBlock name="category.product.addto.compare" remove="true"/>
+   </body>
+</page>

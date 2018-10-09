@@ -1,0 +1,192 @@
+<?php $_advance_compare_helper = $this->helper('Positionsquare\Advancedcompare\Helper\Data'); ?>
+<?php if ($_advance_compare_helper->isEnable() != 0) : ?>
+<?php $compareCountRest = $_advance_compare_helper->getCompareCount(); ?>
+  <div id="myModal" class="modalmou">
+    <div class="modal-content-mou">
+      <div class="product-compare-widget">
+        <div class="compareList">
+          <div class="reset-button">RESET</div>
+          <div class="compare-list-holder"></div>
+        </div>
+        <div class="product-compare-widget-wrap clearfix">
+          <a class="comparelink" href="#">COMPARE</a>
+          <div class="compare-prod-count"><span></span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="compare-msg" style="display: none;"></div>
+  <div class="filter-dragger"></div>
+  <script type="text/javascript">
+  require(['jquery'],function(jQuery) {
+    jQuery(window).load(function() {
+        var ajaxUrl = "<?php echo $block->getUrl('compareproducts/index/comparelist'); ?>";
+        jQuery.ajax({url: ajaxUrl,type: "POST",success: function(result){
+          var compareCount = result.compareList.length;
+          if(compareCount > 0){
+            var compareContent = "";
+            for (var i = 0; i < compareCount; i++) {
+              var eachproduct = result.compareList[i];
+              var productname = eachproduct[0];
+              var mediaurl = eachproduct[1];
+              var productid = eachproduct[2];
+              var producthtml1 = "<li><span class='remove-from-compare'></span>";
+              var producthtml2 = "<div class='product-compare-widget-thumb'>";
+              var producthtml3 = "<img src='"+mediaurl+"'></div><label>"+productname+"</label>";
+              var producthtml4 = "<input type='hidden' class='productid' value='"+productid+"'></input></li>";
+              var producthtml = producthtml1+producthtml2+producthtml3+producthtml4;
+              compareContent = compareContent + producthtml;
+              if(jQuery('#pro-comp-'+productid).length){
+                jQuery('#pro-comp-'+productid).attr("checked", "checked");
+              }
+            }      
+            var compareContentFinal = "<ul class='clearfix'>"+compareContent+"</ul>";
+            jQuery(".compareList .compare-list-holder").html(compareContentFinal);
+            jQuery('.modalmou').show();
+            jQuery(".compare-prod-count span").text(compareCount); 
+          }
+          if(compareCount >= 2){
+            var compareLink = "<?php echo $block->getUrl('catalog/product_compare/index') ?>";
+            jQuery('.comparelink').attr('href',compareLink);
+          }
+        }});
+    });
+    jQuery(document).ready(function() {
+      var compareLink = "<?php echo $block->getUrl('catalog/product_compare/index') ?>";
+      remove_product=function(productId){
+        jQuery.ajax({
+            url: "<?php echo $block->getUrl('compareproducts/index/removeproduct'); ?>",
+            type: "POST",data:{'productid':productId},
+            success: function(result) {
+              var compareCount = result.compareList.length;
+              var compareContent = "";
+              for (var i = 0; i < compareCount; i++) {
+                   var eachproduct = result.compareList[i];
+                   console.log(eachproduct);
+                   var productname = eachproduct[0];
+                   var mediaurl = eachproduct[1];
+                   var productid = eachproduct[2];
+                   var producthtml1 = "<li><span class='remove-from-compare'></span>";
+                   var producthtml2 = "<div class='product-compare-widget-thumb'>";
+                   var producthtml3 = "<img src='"+mediaurl+"'></div><label>"+productname+"</label>";
+                   var producthtml4 = "<input type='hidden' class='productid' value='"+productid+"'></input></li>";
+                   var producthtml = producthtml1+producthtml2+producthtml3+producthtml4;
+                   compareContent = compareContent + producthtml;
+              }      
+              var compareContentFinal = "<ul class='clearfix'>"+compareContent+"</ul>";
+              jQuery(".compare-prod-count span").text(compareCount);
+              jQuery("#myModal").show();
+              jQuery(".compareList .compare-list-holder").html(compareContentFinal);
+              jQuery('#pro-comp-'+productId).removeAttr('checked');
+              jQuery('#pro-comp-'+productId).parents(".compare-checkbox").removeClass("added-to-compare");
+              if(compareCount == 0)
+              {
+                jQuery('input:checkbox').removeAttr('checked');
+                jQuery(".modalmou").hide();
+              }
+              jQuery('.compare-msg').hide();
+              jQuery('.compare-msg').html("");
+              if(compareCount >= 2)
+              {
+                 jQuery('.comparelink').attr('href',compareLink);
+              } else {
+                 jQuery('.comparelink').attr('href','#');
+              }
+        }});
+      }; 
+      jQuery('.reset-button').click(function(){
+        jQuery.ajax({
+            url: "<?php echo $block->getUrl('compareproducts/index/resetcompare'); ?>",
+            type: "POST",success: function(result){
+                var compareCount = result.compareList.length;
+                if(compareCount == 0)
+                {
+                  jQuery('.modalmou').hide();
+                  jQuery('input:checkbox').removeAttr('checked');
+                  jQuery('.compare-msg').hide();
+                  jQuery('.compare-msg').html("");
+                }
+                if(compareCount >= 2)
+                {
+                   jQuery('.comparelink').attr('href',compareLink);
+                } else {
+                   jQuery('.comparelink').attr('href','#');
+                }
+        }});
+        jQuery(".compare-checkbox").removeClass("added-to-compare");
+      });
+      jQuery(document).on('click','.remove-from-compare',function(e){
+          var compareProductAmount = jQuery(".compare-prod-count span").text();
+          if(parseInt(compareProductAmount) >= 3)
+          {
+            var pid = jQuery(this).parent().find('.productid').val();
+            remove_product(pid);
+          } else {
+            jQuery(".compare-msg").show();
+            jQuery(".compare-msg").html('Minimum 2 products should be in the list');
+          }
+      });
+      jQuery(document).on("click",".add-to-compare",function(e){
+        if(jQuery(this).prop("checked") == true){
+          jQuery(this).parents(".compare-checkbox").addClass("added-to-compare");
+          var compareCount = jQuery('.compare-prod-count span').text();
+          var selectedCheck = jQuery(this);
+            jQuery('.compare-msg').hide();
+            jQuery('.compare-msg').html("");
+            var productId = jQuery(this).val();
+            jQuery.ajax({
+                url: "<?php echo $block->getUrl('compareproducts/index/addtocompare'); ?>",
+                type: "POST",
+                data:{'productid':productId},success: function(result){
+                    var compareMsg = result.msg;
+                    if (compareMsg == "0") {
+                      selectedCheck.removeAttr('checked');
+                      selectedCheck.parents(".compare-checkbox").removeClass("added-to-compare");
+                      jQuery('.compare-msg').show();
+                      var comCountMsg = "You can't compare more than <?php echo $compareCountRest; ?> products!";
+                      jQuery('.compare-msg').html(comCountMsg);
+                    }
+                    var compareCount = result.compareList.length;
+                    var compareContent = "";
+                    for (var i = 0; i < compareCount; i++) {
+                      var eachproduct = result.compareList[i];
+                      console.log(eachproduct);
+                      var productname = eachproduct[0];
+                      var mediaurl = eachproduct[1];
+                      var productid = eachproduct[2];
+                      var producthtml1 = "<li><span class='remove-from-compare'></span>";
+                      var producthtml2 = "<div class='product-compare-widget-thumb'>";
+                      var producthtml3 = "<img src='"+mediaurl+"'></div><label>"+productname+"</label>";
+                      var producthtml4 = "<input type='hidden' class='productid' value='"+productid+"'>";
+                      var producthtml5 = "</input></li>";
+                      var producthtml = producthtml1+producthtml2+producthtml3+producthtml4+producthtml5;
+                      compareContent = compareContent + producthtml;
+                    }      
+                    var compareContentFinal = "<ul class='clearfix'>"+compareContent+"</ul>";
+                    //var currentCout = jQuery(".compare-prod-count span").text();
+                   // alert(currentCout);
+                    jQuery(".compare-prod-count span").text(compareCount);
+                    //alert(parseInt(currentCout)+compareCount);
+                    jQuery("#myModal").show();
+                    jQuery(".compareList .compare-list-holder").html(compareContentFinal);
+                    if(compareCount > 0)
+                    {
+                      jQuery(".modalmou").show();
+                    }
+                    if(compareCount >= 2)
+                    {
+                       jQuery('.comparelink').attr('href',compareLink);
+                    } else {
+                       jQuery('.comparelink').attr('href','#');
+                    }  
+            }});
+        } else if(jQuery(this).prop("checked") == false){
+          jQuery(this).parents(".compare-checkbox").removeClass("added-to-compare");
+          var productId = jQuery(this).val();
+          remove_product(productId);
+        }
+      });
+    });
+  })
+  </script>
+<?php endif; ?>
