@@ -3,10 +3,17 @@
   "description": "Advanced compare products module",
   "type": "magento2-module",
   "version": "1.0.0",
+  "extra": {
+    "map": [
+        [
+            "*",
+            "Positionsquare/Advancedcompare"
+        ]
+    ]
+  },
   "license": "proprietary",
   "require": {},
     "minimum-stability": "dev",
-
     "autoload": {
         "files": [
             "registration.php"
