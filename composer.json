@@ -2,18 +2,13 @@
   "name": "murthyvsvn/positionsquare-advancedcompare",
   "description": "Advanced compare products module",
   "type": "magento2-module",
-  "version": "1.7.0",
-  "extra": {
-        "map": [
-            [
-                "*",
-                "Positionsquare/Advancedcompare"
-            ]
-        ]
-  },
+  "version": "1.8.0",
   "license": "proprietary",
   "require": {},
   "autoload": {
-    "files": [ "registration.php" ]
+    "files": [ "registration.php" ],
+    "psr-4": {
+      "Positionsquare\\Advancedcompare\\": ""
+    }
   }
 }
