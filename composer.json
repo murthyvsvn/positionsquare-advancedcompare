@@ -2,7 +2,15 @@
   "name": "murthyvsvn/positionsquare-advancedcompare",
   "description": "Advanced compare products module",
   "type": "magento2-module",
-  "version": "1.4.0",
+  "version": "1.5.0",
+  "extra": {
+        "map": [
+            [
+                "*",
+                "Positionsquare/Advancedcompare"
+            ]
+        ]
+  },
   "license": "proprietary",
   "require": {
     "magento/framework": "0.1.*"
