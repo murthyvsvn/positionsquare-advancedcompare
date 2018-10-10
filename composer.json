@@ -14,14 +14,8 @@
   "license": "proprietary",
   "require": {},
   "repositories": [
-    {
-      "type": "composer",
-      "url": "https://github.com/murthyvsvn/positionsquare-advancedcompare.git"
-    },
-    {
-      "type": "vcs",
-      "url": "https://github.com/murthyvsvn/positionsquare-advancedcompare.git"
-    }
+    {"type": "composer", "url": "https://repo.packagist.com/position2/"},
+    {"packagist.org": false }
   ],
   "minimum-stability": "dev",
   "autoload": {
